@@ -5,26 +5,34 @@ from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from smtpd import COMMASPACE
 
 
 def send_email(addr_to, msg_subj, files):
     addr_from = "@gmail.com"  # Отправитель
-    password = "***"  # Пароль
+    password = ""  # Пароль
 
     msg = MIMEMultipart()
     msg['From'] = addr_from
-    msg['To'] = addr_to
-    msg['Subject'] = msg_subj  # Тема сообщения
-
-
-    process_attachement(msg, files)
-
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.starttls()
-    server.login(addr_from, password)
-    text = msg.as_string()
-    server.send_message(msg)  # Отправляем сообщение
-    server.quit()  # Выходим
+    if type(addr_to) == str:
+        msg['To'] = addr_to
+        msg['Subject'] = msg_subj  # Тема сообщения
+        process_attachement(msg, files)
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(addr_from, password)
+        server.send_message(msg)  # Отправляем сообщение
+        server.quit()  # Выходим
+    else:
+        assert isinstance(addr_to, list)
+        msg['To'] = COMMASPACE.join(addr_to)
+        msg['Subject'] = msg_subj  # Тема сообщения
+        process_attachement(msg, files)
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(addr_from, password)
+        server.send_message(msg)  # Отправляем сообщение
+        server.quit()  # Выходим
 
 
 def process_attachement(msg, files):
@@ -58,12 +66,13 @@ def attach_file(msg, filepath):  # Функция по добавлению ко
 
 
 def send_message():
-    addr_to = ["@gmail.com", "7@chdtu.edu.ua"] # получатели
-    path_to_dirs = ["1", "2"] # пути к папкам
-    for i in (0, 1):
-        print(addr_to[i])
-        print(path_to_dirs[i])
-        send_email(addr_to[i], "Test", files=[path_to_dirs[i]])
+    all = [{'folder': 'Arnika', 'emails': ['@gmail.com', '@chdtu.edu.ua', '@gmail.com']},
+           {'folder': 'Piven', 'emails': '@gmail.com'},
+           {'folder': 'Frau', 'emails': '@chdtu.edu.ua'}]
+    for i in range(0, len(all), 1):
+        interim_dict = all[i]
+        dict = list(interim_dict.values())
+        send_email(dict[1], "Test", files=[dict[0]])
 
 
 send_message()
