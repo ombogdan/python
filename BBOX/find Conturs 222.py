@@ -49,16 +49,15 @@ coordinates = np.argwhere(mask)
 
 
 
-cv2.imshow("hsv.png", hsv)
-cv2.imshow("mask", hsv_res5)
-cv2.imshow("wms5captcha_result.png", res4)
-cv2.imshow("red2", res4_mask)
-# cv2.imwrite("wms3captcha_result.png", img)
+# cv2.imshow("hsv.png", img)
+# cv2.imshow("mask", res)
+# cv2.imshow("wms5captcha_result.png", res4)
+# cv2.imshow("red2", res4_mask)
 # cv2.imshow("red4.png", res3)
-cv2.waitKey()
-cv2.destroyAllWindows()
-image = Image.open("wms3captcha_result.png").convert('RGBA')
-image.convert("RGBA")
-canvas = Image.new('RGBA', image.size, (255, 255, 255, 255))  # Empty canvas colour (r,g,b,a)
-canvas.paste(image, mask=image)  # Paste the image onto the canvas, using it's alpha channel as mask
-canvas.save("canvastest.png", format="PNG")
+# cv2.waitKey(0)
+
+figureWithoutLines = cv2.imread('red4.png', 0)
+kernel = np.ones((3, 3), np.uint8)
+dilation = cv2.dilate(figureWithoutLines,kernel,iterations = 1)
+cv2.imwrite("dilationImage.png", dilation)
+cv2.waitKey(0)

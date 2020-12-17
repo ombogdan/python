@@ -1,17 +1,16 @@
 ﻿import cv2
 import numpy as np
-
+from scipy.spatial import distance
 from matplotlib import pyplot as plt
 from PIL import Image
-image = Image.open("wms (5).png").convert('RGBA')
-image.convert("RGBA")
-canvas = Image.new('RGBA', image.size, (0,0,0,0)) # Empty canvas colour (r,g,b,a)
-canvas.paste(image, mask=image) # Paste the image onto the canvas, using it's alpha channel as mask
-canvas.save("wms5captcha.png", format="PNG")
+# image = Image.open("wms (5).png").convert('RGBA')
+# image.convert("RGBA")
+# canvas = Image.new('RGBA', image.size, (0,0,0,0)) # Empty canvas colour (r,g,b,a)
+# canvas.paste(image, mask=image) # Paste the image onto the canvas, using it's alpha channel as mask
+# canvas.save("wms5captcha.png", format="PNG")
 
-from scipy.spatial import distance
 
-sample_img = cv2.imread("wms5captcha_result.png",  cv2.IMREAD_UNCHANGED)
+sample_img = cv2.imread("red4.png",  cv2.IMREAD_UNCHANGED)
 
 # convert to black and white color space
 sample_img_grey = cv2.cvtColor(sample_img, cv2.COLOR_BGR2GRAY)
@@ -64,6 +63,6 @@ if(M["m00"]>0):
     center_building_contour = sorted_buildings[0]['contour']
     cv2.drawContours(sample_img, [center_building_contour], 0, (0, 255, 0), 2)
 
-cv2.imshow("Image5.png", sample_img)
+cv2.imwrite("Image5.png", sample_img)
 # cv2.imshow("Image3.png", mask)
 cv2.waitKey(0)
