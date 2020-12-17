@@ -2,7 +2,7 @@
 import numpy as np
 from PIL import Image
 
-image = Image.open("wms (3).png").convert('RGBA')
+image = Image.open("wms (10).png").convert('RGBA')
 image.convert("RGBA")
 canvas = Image.new('RGBA', image.size, (0, 0, 0, 0))  # Empty canvas colour (r,g,b,a)
 canvas.paste(image, mask=image)  # Paste the image onto the canvas, using it's alpha channel as mask
@@ -12,26 +12,36 @@ canvas.save("canvastest.png", format="PNG")
 img = cv2.imread("canvastest.png")
 hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
-lower_red = np.array([76, 98, 113])
-upper_red = np.array([120, 89, 253])
+lower_red = np.array([158, 210, 24])
+upper_red = np.array([0, 0, 0])
 mask = cv2.inRange(hsv, lower_red, upper_red)
 red_only = cv2.bitwise_and(img, img, mask=mask)
 
 mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
 res = cv2.subtract(hsv, mask)
 res3 = cv2.subtract(img, res)
-cv2.imwrite("res3.png", res3)
+res4 = cv2.subtract(img, res3)
+res5 = cv2.subtract(hsv, res4)
+res6 = cv2.subtract(img, res5)
+res7 = cv2.subtract(hsv, res6)
+res9 = cv2.subtract(img, res5)
+
+# cv2.imshow("res3.png", res)
+cv2.imwrite("res9.png", res9)
+# cv2.imwrite("resw.png", res6)
+# cv2.imshow("resr.png", res5)
+cv2.waitKey(0)
 #
 
 #
-res3 = cv2.imread('res3.png', 0)
-kernel = np.ones((3, 3), np.uint8)
-dilation = cv2.dilate(res3, kernel, iterations=1)
-cv2.imwrite("dilationImage.png", dilation)
+# res3 = cv2.imread('res9.png', 0)
+# kernel = np.ones((3, 3), np.uint8)
+# dilation = cv2.dilate(res3, kernel, iterations=1)
+# cv2.imwrite("dilationImage.png", dilation)
 #
 
 # роблю чорно білим і заливаю фігуру яка мені треба білим
-image = cv2.imread('dilationImage.png', 0)
+image = cv2.imread('res9.png', 0)
 # thresh = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
 # cnts = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 # cnts = cnts[0] if len(cnts) == 2 else cnts[1]

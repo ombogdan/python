@@ -1,7 +1,7 @@
 ﻿import cv2
 import numpy as np
 from PIL import Image
-img = cv2.imread("canvastest.png")
+img = cv2.imread("fillImage.png")
 # img = cv2.imread("red_only.png")
 hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
@@ -40,24 +40,20 @@ mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
 res = cv2.subtract(hsv, mask)  # negative values become 0 -> black
 res2 = cv2.subtract(img, hsv)  # negative values become 0 -> black
 res3 = cv2.subtract(img, res)  # negative values become 0 -> black
-res4 = cv2.subtract(res3, hsv)  # negative values become 0 -> black
+# res4 = cv2.subtract(hsv, res3)  # negative values become 0 -> black
+res4 = cv2.subtract(img, res2)  # negative values become 0 -> black
 
-res4_mask = cv2.subtract(hsv, res4)
-hsv_res5 = cv2.subtract(res4_mask, res4)
+# res4_mask = cv2.subtract(hsv, res4)
+# hsv_res5 = cv2.subtract(res4_mask, res4)
 # hsv_res6 = cv2.subtract(hsv_res5, hsv_res4)
 coordinates = np.argwhere(mask)
 
 
 
-# cv2.imshow("hsv.png", img)
-# cv2.imshow("mask", res)
-# cv2.imshow("wms5captcha_result.png", res4)
-# cv2.imshow("red2", res4_mask)
-# cv2.imshow("red4.png", res3)
-# cv2.waitKey(0)
-
-figureWithoutLines = cv2.imread('red4.png', 0)
-kernel = np.ones((3, 3), np.uint8)
-dilation = cv2.dilate(figureWithoutLines,kernel,iterations = 1)
-cv2.imwrite("dilationImage.png", dilation)
+cv2.imshow("img.png", img)
+cv2.imshow("hsv", hsv)
+cv2.imshow("res", res)
+cv2.imshow("res2", res2)
+cv2.imshow("res3", res3)
+cv2.imshow("res4", res4)
 cv2.waitKey(0)
