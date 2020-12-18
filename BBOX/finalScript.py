@@ -81,47 +81,41 @@ cv2.imwrite("fillImage.png", image)
 # dilation = cv2.dilate(figureWithoutLines,kernel,iterations = 1)
 # cv2.imwrite("erosionImage.png", erosion)
 
-# шукаю самі угли і виводжу фотку
+# шукаю контур і накладаю білу лінію
+# grayImage = cv2.imread('fillImage.png')
+# imgGry = cv2.cvtColor(grayImage, cv2.COLOR_BGR2GRAY)
+#
+# ret, thrash = cv2.threshold(imgGry, 240, 255, cv2.CHAIN_APPROX_NONE)
+# contours, hierarchy = cv2.findContours(thrash, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+# angle = 0
+# for i in range(len(contours)):
+#     if (i != 0):
+#         approx = cv2.approxPolyDP(contours[i], 0.01 * cv2.arcLength(contours[i], True), True)
+#         cv2.drawContours(grayImage, [approx], 0, (255, 255, 255), 2)
+#         # cv2.fillPoly(grayImage, pts = [approx], (255, 255, 255), 2)
+#         cv2.fillPoly(grayImage, pts =[approx], color=(255,255,255))
+#
+#         print(approx)
+#         x = approx.ravel()[0]
+#         y = approx.ravel()[1] - 5
+#         if (angle < len(approx)):
+#             angle = len(approx)
+#             print(angle)
+#         c_list = []
+#         for corner in approx:
+#             x, y = corner.ravel()
+#             c_list.append([int(x), int(y)])
+#             # cv2.circle(grayImage, (x, y), 3, (0, 255, 0), -1)
+#             # cv2.circle(img, (53,  87), 5, (0, 0, 255), -1)
+#
+# cv2.imwrite('addedWhiteLine.png', grayImage)
+# # cv2.imshow('shapess.png', img)
+# cv2.waitKey(0)
+
+
+#
 # замилення
-####
-
-grayImage = cv2.imread('fillImage.png')
-imgGry = cv2.cvtColor(grayImage, cv2.COLOR_BGR2GRAY)
-
-ret, thrash = cv2.threshold(imgGry, 240, 255, cv2.CHAIN_APPROX_NONE)
-contours, hierarchy = cv2.findContours(thrash, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-angle = 0
-for i in range(len(contours)):
-    if (i != 0):
-        approx = cv2.approxPolyDP(contours[i], 0.01 * cv2.arcLength(contours[i], True), True)
-        cv2.drawContours(grayImage, [approx], 0, (255, 255, 255), 2)
-        print(approx)
-        x = approx.ravel()[0]
-        y = approx.ravel()[1] - 5
-        if (angle < len(approx)):
-            angle = len(approx)
-            print(angle)
-        c_list = []
-        for corner in approx:
-            x, y = corner.ravel()
-            c_list.append([int(x), int(y)])
-            # cv2.circle(grayImage, (x, y), 3, (0, 255, 0), -1)
-            # cv2.circle(img, (53,  87), 5, (0, 0, 255), -1)
-
-cv2.imwrite('addedWhiteLine.png', grayImage)
-# cv2.imshow('shapess.png', img)
-cv2.waitKey(0)
-
-#
-fillImage = cv2.imread('addedWhiteLine.png', 0)
-x, y, w, h = cv2.boundingRect(fillImage)
-thresh = cv2.threshold(fillImage, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
-cnts = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-cv2.floodFill(fillImage, None, (int(x + w / 2), int(y + h / 2)), 255)
-cv2.imwrite("whiteShape.png", fillImage)
-#
-#
-filename = 'whiteShape.png'
+filename = 'fillImage.png'
 img = cv2.imread(filename)
 kernel = np.ones((5, 5), np.float32) / 25
 dst1 = cv2.filter2D(img, -1, kernel)
@@ -151,7 +145,7 @@ for i in range(len(contours)):
             cv2.circle(resultImage, (x, y), 3, (0, 255, 0), -1)
             # cv2.circle(addedWhiteLine, (53,  87), 5, (0, 0, 255), -1)
 
-cv2.imshow('result.png', resultImage)
+cv2.imwrite('result.png', resultImage)
 # cv2.imshow('shapess.png', img)
 cv2.waitKey(0)
 
