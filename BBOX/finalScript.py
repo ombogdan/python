@@ -1,24 +1,29 @@
-﻿from datetime import time, datetime
+﻿import json
+import math
+from datetime import time, datetime
 
 import cv2
 import numpy as np
 from PIL import Image
 startTime = datetime.now()
-# x_max = 3788800.06481352
-# x_min = 3788036.30809565
-# y_max = 5821340.72017974
-# y_min = 5820722.00067032
-#
-# x_max_result = x_max+9.554628536
-# x_min_result = x_min-9.554628536
-# y_max_result = y_max+9.554628536
-# y_min_result = y_min-9.554628536
-#
-# w = (x_max_result-x_min_result)/9.554628536
-# h = (y_max_result-y_min_result)/9.554628536
-# url = 'https://m1.land.gov.ua/geowebcache/service/wms?tiled=true&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=kadastr&TILED=true&STYLES=&SRS=EPSG%3A900913&WIDTH={w}&HEIGHT={h}&CRS=EPSG%3A900913&BBOX={x_min_result}%2C{y_min_result}%2C{x_max_result}%2C{y_max_result}'\
-#     .format(x_max_result=x_max_result, x_min_result = x_min_result, y_max_result=y_max_result, y_min_result = y_min_result, h=np.math.ceil(h), w=np.math.ceil(w))
-# print(url)
+# 6524484000:05:001:0525
+x_max = 3820241.74586235
+x_min = 3819392.7599407
+y_max = 5817332.77901273
+y_min = 5816385.55007244
+
+x_max_result = x_max + 9.554628536
+x_min_result = x_min - 9.554628536
+y_max_result = y_max + 9.554628536
+y_min_result = y_min - 9.554628536
+zoom = 3
+w = (x_max_result - x_min_result) / 9.554628536 * zoom
+h = (y_max_result - y_min_result) / 9.554628536 * zoom
+url = 'https://m1.land.gov.ua/geowebcache/service/wms?tiled=true&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=kadastr&TILED=true&STYLES=&SRS=EPSG%3A900913&WIDTH={w}&HEIGHT={h}&CRS=EPSG%3A900913&BBOX={x_min_result}%2C{y_min_result}%2C{x_max_result}%2C{y_max_result}' \
+    .format(x_max_result=x_max_result, x_min_result=x_min_result, y_max_result=y_max_result, y_min_result=y_min_result,
+            h=np.math.ceil(h),
+            w=np.math.ceil(w))
+print(url)
 
 image = Image.open("wms (17).png").convert('RGBA')
 image.convert("RGBA")
@@ -132,25 +137,39 @@ for i in range(len(contours)):
     if (i != 0):
         approx = cv2.approxPolyDP(contours[i], 0.01 * cv2.arcLength(contours[i], True), True)
         # cv2.drawContours(addedWhiteLine, [approx], 0, (255, 255, 255), 3)
-        print(approx)
+
         x = approx.ravel()[0]
         y = approx.ravel()[1] - 5
         if (angle < len(approx)):
             angle = len(approx)
-            print(angle)
         c_list = []
+        coord = []
         for corner in approx:
             x, y = corner.ravel()
             c_list.append([int(x), int(y)])
             cv2.circle(resultImage, (x, y), 3, (0, 255, 0), -1)
-            # cv2.circle(addedWhiteLine, (53,  87), 5, (0, 0, 255), -1)
 
-cv2.imwrite('result.png', resultImage)
-# cv2.imshow('shapess.png', img)
+            for i in range(len(corner)):
+
+                x_mx = x_min + (corner[i][0] / zoom) * 9.554628536 - 9.554628536
+                y_mx = y_min + (h / zoom * 9.554628536) - (corner[i][1] / zoom) * 9.554628536 - 9.554628536
+                # print(x_mx, y_mx)
+                x = x_mx
+                y = y_mx
+
+                lon = (x / 20037508.34) * 180
+                lat = (y / 20037508.34) * 180
+                lat = 180 / math.pi * (2 * math.atan(math.exp(lat * math.pi / 180)) - math.pi / 2)
+                coord.append({"lat": lat, "y": 0.0, "lon": lon, "x": 0.0, "z": 0.0})
+        print(json.dumps(coord, ensure_ascii=False))
+
+
+
+cv2.imshow('result.png', resultImage)
 cv2.waitKey(0)
 
-start1_time = datetime.now() - startTime
-print(start1_time)
+
+
 # # угли
 # imgage = cv2.imread('grayImage.png')
 # gray_img = cv2.cvtColor(imgage, cv2.COLOR_BGR2GRAY)
