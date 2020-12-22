@@ -7,10 +7,22 @@ import numpy as np
 from PIL import Image
 startTime = datetime.now()
 # 6524484000:05:001:0525
-x_max = 3820241.74586235
-x_min = 3819392.7599407
-y_max = 5817332.77901273
-y_min = 5816385.55007244
+# x_max = 3820241.74586235
+# x_min = 3819392.7599407
+# y_max = 5817332.77901273
+# y_min = 5816385.55007244
+
+# 6524482200:03:052:0010
+# x_max = 3788457.22413668
+# x_min = 3787572.99214035
+# y_max = 5821412.21089381
+# y_min = 5820979.83161632
+
+#test
+x_max = 3780269.74851127
+x_min = 3778558.22183336
+y_max = 5818457.86423401
+y_min = 5815799.1682824
 
 x_max_result = x_max + 9.554628536
 x_min_result = x_min - 9.554628536
@@ -24,8 +36,7 @@ url = 'https://m1.land.gov.ua/geowebcache/service/wms?tiled=true&SERVICE=WMS&VER
             h=np.math.ceil(h),
             w=np.math.ceil(w))
 print(url)
-
-image = Image.open("wms (17).png").convert('RGBA')
+image = Image.open("wms (19).png").convert('RGBA')
 image.convert("RGBA")
 canvas = Image.new('RGBA', image.size, (0, 0, 0, 0))  # Empty canvas colour (r,g,b,a)
 canvas.paste(image, mask=image)  # Paste the image onto the canvas, using it's alpha channel as mask
@@ -133,6 +144,8 @@ imgGry = cv2.cvtColor(resultImage, cv2.COLOR_BGR2GRAY)
 ret, thrash = cv2.threshold(imgGry, 240, 255, cv2.CHAIN_APPROX_NONE)
 contours, hierarchy = cv2.findContours(thrash, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 angle = 0
+# approxs = max(approx, key=len)
+# print(approxs)додать фільтрацію треба по найбільшій площі а не кількості точок
 for i in range(len(contours)):
     if (i != 0):
         approx = cv2.approxPolyDP(contours[i], 0.01 * cv2.arcLength(contours[i], True), True)
