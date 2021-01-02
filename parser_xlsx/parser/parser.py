@@ -4,21 +4,29 @@ import xlrd
 
 
 def csv_from_excel():
-    wb = xlrd.open_workbook('../data/СВК Струмок ОСГ (АТО).xlsx', encoding_override='utf-8')
-    sh = wb.sheet_by_name('Чапаївська ')
-    your_csv_file = open('../еуеі/data_Чапаївська_file1.csv', 'w', encoding='utf-8')
+    wb = xlrd.open_workbook('../LandBank/Земельний/1/Бурімка.xls', encoding_override='cp1252')
+    sh = wb.sheet_by_name('TDSheet')
+    your_csv_file = open('data.csv', 'w', encoding='utf-8')
     wr = csv.writer(your_csv_file, quoting=csv.QUOTE_ALL)
+    print(sh)
 
     for rownum in range(sh.nrows):
         wr.writerow(sh.row_values(rownum))
 
     your_csv_file.close()
-    # f1 = open("data_becon_file.csv", 'r', encoding='utf8')
-    # f2 = open("data_becon_file1.csv", 'w', encoding='utf8')
-    # for line in f1.readlines():
-    #     if ''.join(line.split(',')):
-    #         continue
-    #     f2.write(line)
+    delete_blank_deadlines()
 
+
+def delete_blank_deadlines():
+    csv = open('data.csv', encoding='utf-8')
+    string = csv.readlines()
+    csv.close()
+    file = open("data.csv", "w", encoding="utf-8")
+    for i in string:
+        if not i.isspace():
+            str = i.replace('\n', '')
+            print(str)
+            file.write(str+"\n")
+    file.close()
 
 csv_from_excel()

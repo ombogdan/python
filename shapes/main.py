@@ -2,7 +2,7 @@ import json
 import os
 
 import shapefile
-dir = "3/Shape точки 28.12.2020/Shape_3/"
+dir = "4/Point_ALL/"
 all_files = os.listdir(dir)
 files_dbf = filter(lambda x: x.endswith('.dbf'), all_files)
 result = []
@@ -22,14 +22,14 @@ for dbf in files_dbf:
         field_names = [field[0] for field in fields_0]
 
         for i in range(len(shp)):
-            print(dbf)
+            # print(dbf)
             shapes = sf.shape(i)
             fields = sf.record(i)
 
-            if (name != fields[1]):
+            if (name != fields[12]):
                 # print("!=")
                 dict = {}
-                dict["name"] = fields[13]
+                dict["name"] = fields[12]
                 dict["analysis"] = []
                 result.append(dict)
 
@@ -37,6 +37,7 @@ for dbf in files_dbf:
             # print(fields[7])
 
             if (shapes.shapeType != 5):
+                print(fields[9])
                 analysis = {}
                 points_lon = shapes.points[0][0]
                 points_lat = shapes.points[0][1]
@@ -44,25 +45,26 @@ for dbf in files_dbf:
                 analysis["lat"] = str(points_lat)
                 analysis["lon"] = str(points_lon)
 
-                analysis["k"] = str(fields[6])
-                analysis["no3"] = str(fields[3])
-                analysis["org"] = str(fields[2])
-                analysis["p"] = str(fields[5])
-                analysis["ph"] = str(fields[1])
-                analysis["s"] = str(fields[12])
+                analysis["k"] = str(fields[5])   #---
+                analysis["no3"] = str(fields[3]) #---
+                analysis["org"] = str(fields[2]) #--  OL
+                analysis["p"] = str(fields[4])   #---
+                analysis["ph"] = str(fields[1])  #--
+                analysis["s"] = str(fields[11])  #--
                 analysis["zn"] = None
-                analysis["ca"] = str(fields[7])
-                analysis["mg"] = str(fields[8])
-                analysis["na"] = str(fields[9])
+                analysis["ca"] = str(fields[6]) #--
+                analysis["mg"] = str(fields[7]) #--
+                analysis["na"] = str(fields[8]) #--
                 analysis["mn"] = None
                 analysis["cu"] = None
                 analysis["b"] = None
                 analysis["fe"] = None
-                analysis["ss"] = str(fields[11])
-                analysis["bs"] = str(fields[4])
-                analysis["cec"] = str(fields[10])
+                analysis["ss"] = str(fields[10]) #--
+                analysis["bs"] = None
+                analysis["cec"] = str(fields[9]) #--
                 analysis["al"] = None
                 analysis["cl"] = None
+                analysis["p2o5"] = None
 
                 dict["analysis"].append(analysis)
             else:
@@ -105,9 +107,9 @@ for dbf in files_dbf:
 
                 dict["analysis"].append(analysis)
 
-            name = fields[13]
+            name = fields[12]
 
-    # print(json.dumps(result))
+print(json.dumps(result))
 
 file = open("ivannucha.json", "w")
 file.write(json.dumps(result))
