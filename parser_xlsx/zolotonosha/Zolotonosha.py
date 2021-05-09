@@ -123,6 +123,8 @@ with open('data_zolot_file.csv', encoding='utf8') as File:
             right2_number = ''
 
         if (len(date_of_issue) != 0):
+            print(date_of_issue)
+
             dt = datetime.fromordinal(datetime(1900, 1, 1).toordinal() + int(date_of_issue) - 2)
             date_of_issue = dt.strftime('%Y-%m-%d')
         else:

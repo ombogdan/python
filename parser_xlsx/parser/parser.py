@@ -4,11 +4,10 @@ import xlrd
 
 
 def csv_from_excel():
-    wb = xlrd.open_workbook('../LandBank/Земельний/1/Бурімка.xls', encoding_override='cp1252')
+    wb = xlrd.open_workbook('../LandBank/Земельний/Нива плюс Іваниця ЗАГАЛЬНА.xls', encoding_override='cp1252')
     sh = wb.sheet_by_name('TDSheet')
     your_csv_file = open('data.csv', 'w', encoding='utf-8')
     wr = csv.writer(your_csv_file, quoting=csv.QUOTE_ALL)
-    print(sh)
 
     for rownum in range(sh.nrows):
         wr.writerow(sh.row_values(rownum))
