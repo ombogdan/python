@@ -1,13 +1,12 @@
-﻿import json
+﻿import csv
+import json
 from datetime import datetime
 
 from dateutil import parser
 
-with open('Бодаквянська_с_р_AGR_26_03_2021_16_28_26_геопросторові_дані.geojson', encoding='utf8') as Geo:
-    reader = list(Geo)
-    geoJsonList = json.loads(reader[0])
 
-with open('Бодаквянська_с_р_AGR_26_03_2021_16_28_26_довiдки.json', encoding='utf8') as File:
+
+with open('./Земельний/Ічнянська міська рада/Ічнянська міська рада _ 26.05.2021 12_26_34 - довiдки.json', encoding='utf8') as File:
     reader = list(File)
     jsonList = json.loads(reader[0])
     arr = []
@@ -22,14 +21,14 @@ with open('Бодаквянська_с_р_AGR_26_03_2021_16_28_26_довiдки.
         ownership = {}
         owner = {}
         irps = None
-        if (jsonList[i]['RrpAdvanced'] != None and jsonList[i]['RrpAdvanced']['realty'] != None):
+        if (jsonList[i]['RrpAdvanced'] != None and jsonList[i]['RrpAdvanced']['realty'] != None and len(jsonList[i]['RrpAdvanced']['realty'])>0):
             RrpAdvanced = jsonList[i]['RrpAdvanced']['realty'][0]
             # все шо в ірпс це right2
-            if (RrpAdvanced['irps'] != None):
+            if (RrpAdvanced['irps'] != None and len(RrpAdvanced['irps'])>0):
                 irps = RrpAdvanced['irps'][0]
 
         OwnershipInfoList = []
-        if (jsonList[i]['Plot']['dzkLandInfo']['OwnershipInfo'] != None):
+        if (jsonList[i]['Plot']['dzkLandInfo'] != None and jsonList[i]['Plot']['dzkLandInfo']['OwnershipInfo'] != None):
             OwnershipInfoList = jsonList[i]['Plot']['dzkLandInfo']['OwnershipInfo']
         for o in range(len(OwnershipInfoList)):
             item = OwnershipInfoList[o]
@@ -67,26 +66,27 @@ with open('Бодаквянська_с_р_AGR_26_03_2021_16_28_26_довiдки.
         contract_date_to = jsonList[i]
 
         # Purpose Id
-        purpose = jsonList[i]['Plot']['dzkLandInfo']['Purpose']
-        purposeId = None
-        if (purpose == "01.01 Для ведення товарного сільськогосподарського виробництва"):
-            purposeId = 1
-        elif (purpose == "01.02 Для ведення фермерського господарства"):
-            purposeId = 2
-        elif (purpose == "01.03 Для ведення особистого селянського господарства"):
-            purposeId = 3
-        elif (purpose == "01.04 Для ведення підсобного сільського господарства"):
-            purposeId = 4
-        elif (purpose == "01.05 Для індивідуального садівництва"):
-            purposeId = 5
-        elif (purpose == "01.06 Для колективного садівництва"):
-            purposeId = 6
-        elif (purpose == "01.07 Для городництва"):
-            purposeId = 7
-        elif (purpose == "01.08 Для сінокосіння і випасання худоби"):
-            purposeId = 8
-        elif (purpose == "01.09 Для дослідних і навчальних цілей"):
-            purposeId = 9
+        if (jsonList[i]['Plot']['dzkLandInfo'] != None and jsonList[i]['Plot']['dzkLandInfo']['Purpose'] != None):
+            purpose = jsonList[i]['Plot']['dzkLandInfo']['Purpose']
+            purposeId = None
+            if (purpose == "01.01 Для ведення товарного сільськогосподарського виробництва"):
+                purposeId = 1
+            elif (purpose == "01.02 Для ведення фермерського господарства"):
+                purposeId = 2
+            elif (purpose == "01.03 Для ведення особистого селянського господарства"):
+                purposeId = 3
+            elif (purpose == "01.04 Для ведення підсобного сільського господарства"):
+                purposeId = 4
+            elif (purpose == "01.05 Для індивідуального садівництва"):
+                purposeId = 5
+            elif (purpose == "01.06 Для колективного садівництва"):
+                purposeId = 6
+            elif (purpose == "01.07 Для городництва"):
+                purposeId = 7
+            elif (purpose == "01.08 Для сінокосіння і випасання худоби"):
+                purposeId = 8
+            elif (purpose == "01.09 Для дослідних і навчальних цілей"):
+                purposeId = 9
         # ------------------------------
 
         # ---------irps------------------
@@ -103,7 +103,7 @@ with open('Бодаквянська_с_р_AGR_26_03_2021_16_28_26_довiдки.
         right2_fio = None
         right2_reestration_organization = None
         right2_inn = None
-        if (jsonList[i]['Plot']['dzkLandInfo']['SubjectRealRightLand'] != None):
+        if (jsonList[i]['Plot']['dzkLandInfo'] != None and jsonList[i]['Plot']['dzkLandInfo']['SubjectRealRightLand'] != None):
             right2_fio = jsonList[i]['Plot']['dzkLandInfo']['SubjectRealRightLand'][0]['NameUo']
             right2_reestration_organization = jsonList[i]['Plot']['dzkLandInfo']['SubjectRealRightLand'][0]['NameUo']
             right2_inn = jsonList[i]['Plot']['dzkLandInfo']['SubjectRealRightLand'][0]['Edrpou']
@@ -116,7 +116,7 @@ with open('Бодаквянська_с_р_AGR_26_03_2021_16_28_26_довiдки.
                 right2_inn = jsonList[i]['Plot']['rrpLandInfo']['subject'][0]['code']
 
         if (right2_fio == None):
-            if (jsonList[i]['Plot']['dzkLandInfo']['SubjectRealRightLand'] != None):
+            if (jsonList[i]['Plot']['dzkLandInfo'] !=None and jsonList[i]['Plot']['dzkLandInfo']['SubjectRealRightLand'] != None):
                 right2_fio = jsonList[i]['Plot']['dzkLandInfo']['SubjectRealRightLand'][0]['NameFo']
         d["right2_number"] = right2_number
         d["bank_right2type_id"] = None
@@ -192,8 +192,11 @@ with open('Бодаквянська_с_р_AGR_26_03_2021_16_28_26_довiдки.
         # exit(0)
 
         d["coordinates"] = coordinates
-        if (d['right2_inn'] != None):
-            arr.append(d)
-    file = open("data.json", "w", encoding="utf-8")
+        if (d['right2_inn'] == None):
+            print(d)
+        arr.append(d)
+    # print(len(arr))
+    # print('len(arr)')
+    file = open("./Земельний/Ічнянська міська рада/result.json", "w", encoding="utf-8")
     file.write(json.dumps(arr, ensure_ascii=False))
     file.close()
