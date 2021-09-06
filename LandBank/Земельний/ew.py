@@ -1,5 +1,5 @@
 ﻿A = []
-file = open('kadastr_number.txt', encoding='utf8')
+file = open('Новенский с ВЕСЬ МЧ.txt', encoding='utf8')
 string = file.readlines()
 for str in string:
     # A.append(str)

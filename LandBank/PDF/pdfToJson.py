@@ -48,7 +48,7 @@ def floatHourToTime(fh):
     )
 
 
-with open('kadastrList.txt', encoding='utf8') as File:
+with open('data.csv', encoding='utf8') as File:
     reader = list(csv.reader(File, skipinitialspace=True))
     arr = []
     arr_kad = []
@@ -67,6 +67,9 @@ with open('kadastrList.txt', encoding='utf8') as File:
         ownership = {}
         owner = {}
         kadastr_number = str(result[0])
+        kadastr = open("kadastr_number.txt", "a", encoding="utf-8")
+        kadastr.write(kadastr_number+"\n")
+        kadastr.close()
 
         right1_fio = str(result[7])
         right1_inn = None

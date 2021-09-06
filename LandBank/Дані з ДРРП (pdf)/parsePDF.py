@@ -6,6 +6,7 @@ from datetime import datetime
 import numpy
 from numpy.lib import math
 
+
 def getCoords(x, y):
     lon = (x / 20037508.34) * 180
     lat = (y / 20037508.34) * 180
@@ -13,7 +14,7 @@ def getCoords(x, y):
     return round(lat, 7), round(lon, 7)
 
 
-with open('../Дані з ДРРП (pdf)/data.csv', encoding='utf8') as File:
+with open('./data.csv', encoding='utf8') as File:
     reader = list(csv.reader(File, skipinitialspace=True))
     arr = []
     arr_kad = []
@@ -23,28 +24,30 @@ with open('../Дані з ДРРП (pdf)/data.csv', encoding='utf8') as File:
     for row in reader:
         rows.append(row)
     for i in range(len(rows)):
+        result = rows[i][0].split(sep=";")
+        print(result[7])
         d = {}
         fio_arr = []
         ownershipList = []
         ownership = {}
         owner = {}
         rowsObjectInfo = []
-        with open('../Дані з ДРРП (pdf)/get-object-info.txt', encoding='utf8') as ObjectInfo:
+        with open('./get-object-info.txt', encoding='utf8') as ObjectInfo:
             reader1 = ObjectInfo.readlines()
             for row in reader1:
                 rowsObjectInfo.append(row)
 
-        kad_number = str(rows[i][0])
+        kad_number = str(result[0])
         if kad_number != " ":
             exist = False
             for o in range(len(arr)):
                 if (kad_number == arr[o]['kadastr_number']):
-                    ownership["right1_fio"] = str(rows[i][0])
-                    ownership["right1_inn"] = str(rows[i][3])
+                    ownership["right1_fio"] = str(result[7])
+                    ownership["right1_inn"] = None
                     ownership["right1_date_reestration"] = None
-                    ownership["right1_number"] = str(rows[i][14])
+                    ownership["right1_number"] = str(result[1])
                     ownership["right1_reestration_organization"] = None
-                    ownership["right1_passport"] = str(rows[i][2])
+                    ownership["right1_passport"] = str(result[2])
                     ownership["right1_address"] = None
                     ownership["right1_phone"] = None
                     ownership["right1_note"] = None
@@ -61,12 +64,12 @@ with open('../Дані з ДРРП (pdf)/data.csv', encoding='utf8') as File:
             if exist == True:
                 continue
             else:
-                ownership["right1_fio"] = str(rows[i][0])
-                ownership["right1_inn"] = str(rows[i][3])
+                ownership["right1_fio"] = str(result[7])
+                ownership["right1_inn"] = None
                 ownership["right1_date_reestration"] = None
-                ownership["right1_number"] = str(rows[i][14])
+                ownership["right1_number"] = str(result[1])
                 ownership["right1_reestration_organization"] = None
-                ownership["right1_passport"] = str(rows[i][2])
+                ownership["right1_passport"] = str(result[2])
                 ownership["right1_address"] = None
                 ownership["right1_phone"] = None
                 ownership["right1_note"] = None
@@ -84,12 +87,16 @@ with open('../Дані з ДРРП (pdf)/data.csv', encoding='utf8') as File:
             purposeId = None
             purpose = None
             for q in range(len(rowsObjectInfo)):
-                result = rowsObjectInfo[q].split(sep=";")
-                resultJson = json.loads(result[1])
-                if (result[0] == kad_number):
+                result1 = rowsObjectInfo[q].split(sep=";")
+                resultJson = json.loads(result1[1])
+                if (result1[0] == kad_number):
                     square = resultJson[0]['area']
                     koatuu = resultJson[0]['koatuu']
                     purpose = resultJson[0]['purpose']
+            print(result[7])
+
+            if (square == None):
+                square = str(result[8])
 
             if (purpose == "01.01 Для ведення товарного сільськогосподарського виробництва"):
                 purposeId = 1
@@ -123,57 +130,27 @@ with open('../Дані з ДРРП (pdf)/data.csv', encoding='utf8') as File:
             d["bank_city_id"] = None
             d["right2_type"] = None
             d["right2_fio"] = None
-            d["right2_inn"] = 32232152
-            d["right2_name"] = "ТОВ \"ВКФ \"Мелітопольська черешня"
+            d["right2_inn"] = None
+            d["right2_name"] = None
             d["right2_date_reestration"] = None
-            d["right2_number"] = None
+            d["right2_number"] = str(result[2])
             d["right2_reestration_organization"] = None
-            d["contract_number"] = str(rows[i][5])
-            contract_date = None
-            if (str(rows[i][7]) != ""):
-                contract_date_format1 = datetime.strptime(str(rows[i][7]), '%d.%m.%y')
-                contract_date = datetime.strftime(contract_date_format1, "%m.%d.%Y")
-                result_contract_date = datetime.strptime(contract_date, "%m.%d.%Y")
-                str_contract_date = None
-                if result_contract_date.year < 2000:
-                    date_contract_date = result_contract_date.replace(year=result_contract_date.year + 100)
-                    str_contract_date = datetime.strftime(date_contract_date, "%m.%d.%Y")
+            d["contract_number"] = str(result[4])
 
-            if(str_contract_date==None):
-                d["contract_date"] = contract_date
+            if (str(result[5]) != ""):
+                d["contract_date"] = str(result[5])
             else:
-                d["contract_date"] = str_contract_date
+                d["contract_date"] = None
 
-            contract_date_reestration = None
-            if (str(rows[i][7]) != ""):
-                contract_date_reestration_format1 = datetime.strptime(str(rows[i][7]), '%d.%m.%y')
-                contract_date_reestration = datetime.strftime(contract_date_reestration_format1, "%m.%d.%Y")
-                date_contract_date_reestration = datetime.strptime(contract_date_reestration, "%m.%d.%Y")
-                str_contract_date_reestration = None
-                if date_contract_date_reestration.year < 2000:
-                    date_contract_date = date_contract_date_reestration.replace(year=date_contract_date_reestration.year + 100)
-                    str_contract_date_reestration = datetime.strftime(date_contract_date, "%m.%d.%Y")
-            if (str_contract_date_reestration == None):
-                d["contract_date_reestration"] = contract_date_reestration
+            if (str(result[3]) != ""):
+                d["contract_date_reestration"] = str(result[3])
             else:
-                d["contract_date_reestration"] = str_contract_date_reestration
+                d["contract_date_reestration"] = None
 
-
-
-            contract_date_to = None
-
-            if (str(rows[i][8]) != ""):
-                contract_date_to_format1 = datetime.strptime(str(rows[i][8]), '%d.%m.%y')
-                contract_date_to = datetime.strftime(contract_date_to_format1, "%m.%d.%Y")
-                date_contract_date_to = datetime.strptime(contract_date_to, "%m.%d.%Y")
-                str_contract_date_to = None
-                if date_contract_date_to.year < 2000:
-                    date_contract_date = date_contract_date_to.replace(year=date_contract_date_to.year + 100)
-                    str_contract_date_to = datetime.strftime(date_contract_date, "%m.%d.%Y")
-            if (str_contract_date_to == None):
-                d["contract_date_to"] = contract_date_to
+            if (str(result[6]) != ""):
+                d["contract_date_to"] = str(result[6])
             else:
-                d["contract_date_to"] = str_contract_date_to
+                d["contract_date_to"] = None
 
             d["contract_supplementary_date"] = None
             d["contract_supplementary_date_reestration"] = None
@@ -201,7 +178,7 @@ with open('../Дані з ДРРП (pdf)/data.csv', encoding='utf8') as File:
             d["bank_tenant_id"] = None
 
             rowsq = []
-            with open('../Дані з ДРРП (pdf)/find-parcel.txt', encoding='utf8') as Fil:
+            with open('./find-parcel.txt', encoding='utf8') as Fil:
                 center_data = {}
                 read = Fil.readlines()
 
@@ -226,7 +203,7 @@ with open('../Дані з ДРРП (pdf)/data.csv', encoding='utf8') as File:
 
             arr.append(d)
 
-    file = open("./Новенский с ВЕСЬ МЧ.json", "w", encoding="utf-8")
+    file = open("./result.json", "w", encoding="utf-8")
     # print(arr)
     file.write(json.dumps(arr, ensure_ascii=False))
     file.close()

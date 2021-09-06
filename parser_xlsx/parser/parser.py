@@ -4,7 +4,9 @@ import xlrd
 
 
 def csv_from_excel():
-    wb = xlrd.open_workbook('./Озеряне МЧ.xls', encoding_override='cp1252')
+    wb = xlrd.open_workbook('./Новенский с ВЕСЬ МЧ.xls'
+                            # , encoding_override='cp1252'
+                            )
     sh = wb.sheet_by_name('Sheet1')
     your_csv_file = open('data.csv', 'w', encoding='utf-8')
     wr = csv.writer(your_csv_file, quoting=csv.QUOTE_ALL)

@@ -4,9 +4,12 @@ from datetime import datetime
 
 from dateutil import parser
 
-
-
-with open('./Земельний/Ічнянська міська рада/Ічнянська міська рада _ 26.05.2021 12_26_34 - довiдки.json', encoding='utf8') as File:
+with open('./ВкурсіЗемлі/Бурівська с-р/Бурівська сільська рада _ 26.05.2021 11_59_24 - геопросторові дані.geojson',
+          encoding='utf8') as Geo:
+    reader = list(Geo)
+    geoJsonList = json.loads(reader[0])
+with open('./ВкурсіЗемлі/Звіт Vkursi Zemli _ 24.06.2021 17_17 - довiдки.json',
+          encoding='utf8') as File:
     reader = list(File)
     jsonList = json.loads(reader[0])
     arr = []
@@ -21,41 +24,64 @@ with open('./Земельний/Ічнянська міська рада/Ічн�
         ownership = {}
         owner = {}
         irps = None
-        if (jsonList[i]['RrpAdvanced'] != None and jsonList[i]['RrpAdvanced']['realty'] != None and len(jsonList[i]['RrpAdvanced']['realty'])>0):
+        if (jsonList[i]['RrpAdvanced'] != None and jsonList[i]['RrpAdvanced']['realty'] != None and len(
+                jsonList[i]['RrpAdvanced']['realty']) > 0):
             RrpAdvanced = jsonList[i]['RrpAdvanced']['realty'][0]
             # все шо в ірпс це right2
-            if (RrpAdvanced['irps'] != None and len(RrpAdvanced['irps'])>0):
+            if (RrpAdvanced['irps'] != None and len(RrpAdvanced['irps']) > 0):
                 irps = RrpAdvanced['irps'][0]
 
         OwnershipInfoList = []
-        if (jsonList[i]['Plot']['dzkLandInfo'] != None and jsonList[i]['Plot']['dzkLandInfo']['OwnershipInfo'] != None):
-            OwnershipInfoList = jsonList[i]['Plot']['dzkLandInfo']['OwnershipInfo']
+        # if (jsonList[i]['Plot']['dzkLandInfo'] != None and jsonList[i]['Plot']['dzkLandInfo']['OwnershipInfo'] != None):
+        #     OwnershipInfoList = jsonList[i]['Plot']['dzkLandInfo']['OwnershipInfo']
+
+        if (OwnershipInfoList == []):
+            if (jsonList[i]['Plot']['rrpLandInfo'] != None and jsonList[i]['Plot']['rrpLandInfo']['subject'] != None):
+                OwnershipInfoList = jsonList[i]['Plot']['rrpLandInfo']['subject']
+
+        if (OwnershipInfoList == []):
+            print(jsonList[i]['RrpAdvanced'])
+            if (jsonList[i]['RrpAdvanced'] != None and jsonList[i]['RrpAdvanced']['realty'][0] != None and jsonList[i]['RrpAdvanced']['realty'][0]['irps'] != None and jsonList[i]['RrpAdvanced']['realty'][0]['irps']['subjects'] != None):
+                OwnershipInfoList = jsonList[i]['Plot']['rrpLandInfo']['subject']
+        if(jsonList[i]['CadastrNumber']=='7421480800:03:000:0544'):
+            print(OwnershipInfoList)
         for o in range(len(OwnershipInfoList)):
             item = OwnershipInfoList[o]
+            # print(item)
+            if (item['sbjRlName'] == 'Орендодавець'):
+                right1_number = None
+                right1_date_reestration = None
+                name = item['name']
+                if name == None:
+                    name = item['sbjName']
 
-            right1_number = None
-            right1_date_reestration = None
-            name = item['NameFo']
-
-            ownership["right1_fio"] = name
-            ownership["right1_inn"] = None
-            ownership["right1_date_reestration"] = item['DateRegRight']
-            ownership["right1_number"] = item['EntryRecordNumber']
-            ownership["right1_reestration_organization"] = None
-            ownership["right1_passport"] = None
-            ownership["right1_address"] = None
-            ownership["right1_phone"] = None
-            ownership["right1_note"] = None
-            ownership["birthday"] = None
-            ownership["gender"] = None
-            ownership["ownership_document"] = None
-            ownership["ownership_type_detail"] = None
-            ownership["bank_share_id"] = None
-            ownership["percent"] = geoJsonList['features'][i]['properties']['dzkPercnOwn']
-            ownershipList.append(ownership)
-            d["ownership"] = ownershipList
-            ownership = {}
-
+                ownership["right1_fio"] = name
+                ownership["right1_inn"] = None
+                # ownership["right1_date_reestration"] = item['DateRegRight']
+                ownership["right1_date_reestration"] = None
+                right1_number = item['code']
+                if(right1_number == None and 'sbjCode' in item):
+                    right1_number = item['sbjCode']
+                # ownership["right1_number"] = item['EntryRecordNumber']
+                ownership["right1_number"] = right1_number
+                ownership["right1_reestration_organization"] = None
+                ownership["right1_passport"] = None
+                ownership["right1_address"] = None
+                ownership["right1_phone"] = None
+                ownership["right1_note"] = None
+                ownership["birthday"] = None
+                ownership["gender"] = None
+                ownership["ownership_document"] = None
+                ownership["ownership_type_detail"] = None
+                ownership["bank_share_id"] = None
+                # ownership["percent"] = geoJsonList['features'][i]['properties']['dzkPercnOwn']
+                ownership["percent"] = None
+                ownershipList.append(ownership)
+                d["ownership"] = ownershipList
+                ownership = {}
+        # if (jsonList[i]['CadastrNumber'] == '7421781600:06:000:0905'):
+        #     print(d["ownership"])
+        #     exit(9)
         # if (jsonList[i]['CadastrNumber'] == '5322681100:00:007:0009'):
         pecuniary_valuation = ''
         if (pecuniary_valuation == ''):
@@ -63,7 +89,6 @@ with open('./Земельний/Ічнянська міська рада/Ічн�
         # else:
         # pecuniary_valuation = pecuniary_valuation.replace(',', '')
 
-        contract_date_to = jsonList[i]
 
         # Purpose Id
         if (jsonList[i]['Plot']['dzkLandInfo'] != None and jsonList[i]['Plot']['dzkLandInfo']['Purpose'] != None):
@@ -103,21 +128,28 @@ with open('./Земельний/Ічнянська міська рада/Ічн�
         right2_fio = None
         right2_reestration_organization = None
         right2_inn = None
-        if (jsonList[i]['Plot']['dzkLandInfo'] != None and jsonList[i]['Plot']['dzkLandInfo']['SubjectRealRightLand'] != None):
+        if (jsonList[i]['Plot']['dzkLandInfo'] != None and jsonList[i]['Plot']['dzkLandInfo'][
+            'SubjectRealRightLand'] != None):
             right2_fio = jsonList[i]['Plot']['dzkLandInfo']['SubjectRealRightLand'][0]['NameUo']
             right2_reestration_organization = jsonList[i]['Plot']['dzkLandInfo']['SubjectRealRightLand'][0]['NameUo']
             right2_inn = jsonList[i]['Plot']['dzkLandInfo']['SubjectRealRightLand'][0]['Edrpou']
+            if (right2_fio == None):
+                right2_fio = jsonList[i]['Plot']['dzkLandInfo']['SubjectRealRightLand'][0]['NameFo']
+
         if (right2_fio == None):
             if (jsonList[i]['Plot']['rrpLandInfo']['subject'] != None):
-                right2_fio = jsonList[i]['Plot']['rrpLandInfo']['subject'][0]['name']
+                right2Array = jsonList[i]['Plot']['rrpLandInfo']['subject']
+                for right2 in right2Array:
+                    if (right2['sbjRlName'] == "Орендар"):
+                        right2_fio = right2['name']
 
         if (right2_inn == None):
             if (jsonList[i]['Plot']['rrpLandInfo']['subject'] != None):
-                right2_inn = jsonList[i]['Plot']['rrpLandInfo']['subject'][0]['code']
+                right2Array = jsonList[i]['Plot']['rrpLandInfo']['subject']
+                for right2 in right2Array:
+                    if (right2['sbjRlName'] == "Орендар"):
+                        right2_inn = right2['code']
 
-        if (right2_fio == None):
-            if (jsonList[i]['Plot']['dzkLandInfo'] !=None and jsonList[i]['Plot']['dzkLandInfo']['SubjectRealRightLand'] != None):
-                right2_fio = jsonList[i]['Plot']['dzkLandInfo']['SubjectRealRightLand'][0]['NameFo']
         d["right2_number"] = right2_number
         d["bank_right2type_id"] = None
         d["right2_type"] = None
@@ -130,7 +162,7 @@ with open('./Земельний/Ічнянська міська рада/Ічн�
         d['kadastr_number'] = jsonList[i]['CadastrNumber']
         d['pecuniary_valuation'] = None
         # pecuniary_valuation це нго ngo
-        d["square"] = round(jsonList[i]['Plot']['area'], 2)
+        d["square"] = round(jsonList[i]['Plot']['area'], 4)
         d["square_count"] = None
         d['bank_region_id'] = None
         d['bank_district_id'] = None
@@ -182,21 +214,34 @@ with open('./Земельний/Ічнянська міська рада/Ічн�
         d["bank_share_from_square"] = None
         d["bank_tenant_id"] = None
 
-        coordinates = []
-        for h in range(len(geoJsonList['features'][i]['geometry']['coordinates'][0])):
-            item = geoJsonList['features'][i]['geometry']['coordinates'][0][h]
-
-            for c in range(len(item)):
-                coordinates.append({'lat': item[c][1],
-                                    'lon': item[c][0]})
+        # coordinates = []
+        # for h in range(len(geoJsonList['features'][i]['geometry']['coordinates'][0])):
+        #     item = geoJsonList['features'][i]['geometry']['coordinates'][0][h]
+        #
+        #     for c in range(len(item)):
+        #         coordinates.append({'lat': item[c][1],
+        #                             'lon': item[c][0]})
         # exit(0)
 
-        d["coordinates"] = coordinates
-        if (d['right2_inn'] == None):
-            print(d)
-        arr.append(d)
+        # d["coordinates"] = coordinates
+        # if (d['right2_inn'] == None):
+        #     print(d)
+        kad_number = jsonList[i]['CadastrNumber']
+        rowsq = []
+        with open('example.json', encoding='utf8') as Fil:
+            center_data = {}
+            read = Fil.readlines()
+
+            for rowq in read:
+                rowsq.append(rowq)
+            for l in range(len(rowsq)):
+                res = rowsq[l].split(sep="\n")
+                # print(res)
+                if (kad_number == res[0]):
+                    arr.append(d)
+
     # print(len(arr))
-    # print('len(arr)')
-    file = open("./Земельний/Ічнянська міська рада/result.json", "w", encoding="utf-8")
+    # print(len(arr))
+    file = open("./ВкурсіЗемлі/Бурівська с-р/result.json", "w", encoding="utf-8")
     file.write(json.dumps(arr, ensure_ascii=False))
     file.close()
